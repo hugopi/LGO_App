@@ -6,11 +6,13 @@ shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 shapeFile = "GDM1"
 date = "date1"
 k = 30
-dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
-source, img_classified, prediction = classificationResults(outputDirectory, dictionary, date, shapeFile, k)
+
+
+#herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k)
+
+source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
 data = samples(csvPath,source)
 row,col = findValidIndex(source,data)
-
 
 herbier = img_classified[row, col]
 img_herbier = img_classified

@@ -5,9 +5,14 @@ shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 shapeFile = "GDM1"
 date = "date1"
 k = 30
+
+
+#source, image_classified, prediction = classificationResults(outputDirectory,shapeFileDirectory, k)
+
 dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
 
-#source, image_classified, prediction = classificationResults(outputDirectory, dictionary, date, shapeFile, k)
+date,shapeFile = selectParameters(dictionary)
+
 # Create a dataset with image data
 dataset = fillDataset(shapeFile,date,dictionary,outputDirectory)
 

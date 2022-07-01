@@ -22,3 +22,21 @@ def imageDictionary(outputDirectory, shapeFileDirectory):
         dictionary.update(date)
 
     return dictionary
+
+def selectParameters(dictionary):
+
+    dateKey = dictionary.keys()
+
+    for i in dateKey:
+        print(i)
+
+    date = input("choose your date : ")
+
+    shapeKey = dictionary[date].keys()
+
+    for i in shapeKey:
+        print(i)
+
+    shape = input("choose your shape : ")
+
+    return date,shape

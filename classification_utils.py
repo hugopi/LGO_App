@@ -60,8 +60,11 @@ def classification(separation, dataset, k):
     return datasetWithPrediction['Prediction'].to_numpy()
 
 
-def classificationResults(outputDirectory, dictionary, date, shapeFile, k):
+def classificationResults(outputDirectory,shapeFileDirectory, k):
 
+    dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
+
+    date,shapeFile = selectParameters(dictionary)
     # Create a dataset with image data
     dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 
@@ -90,3 +93,19 @@ def classificationResults(outputDirectory, dictionary, date, shapeFile, k):
     plt.title("output Image")
 
     return source, img_classified, prediction
+
+
+def herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k):
+
+    source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
+    data = samples(csvPath, source)
+    row, col = findValidIndex(source, data)
+
+    herbier = img_classified[row, col]
+    img_herbier = img_classified
+
+    img_herbier[img_herbier != herbier] = 0
+
+    plt.figure()
+    plt.imshow(img_herbier)
+    plt.title("herbier")
