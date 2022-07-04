@@ -23,7 +23,12 @@ with rasterio.open(source) as src:
     dataMaskEst = dataMaskNord[dataMaskNord['Est']<=boundingBox[3]]
     dataMaskEst = dataMaskEst[dataMaskEst['Est'] >= boundingBox[2]]
     dataMaskHerbier = dataMaskEst[dataMaskEst['herbier'] == 1]
-    valid = dataMaskHerbier.sample()
-    x = valid['Nord']
-    y = valid['Est']
-    row, col = src.index(x, y)
+
+    validIndex = []
+    for i in dataMaskHerbier.index:
+        print(i)
+        x = dataMaskHerbier['Nord'][i]
+        y = dataMaskHerbier['Est'][i]
+        row, col = src.index(x, y)
+        validIndex.append((row,col))
+

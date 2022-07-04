@@ -2,7 +2,7 @@ from classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM1"
+shapeFile = "GDM2"
 date = "date1"
 
 dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
@@ -27,6 +27,7 @@ prediction = kmeans.predict(dataset)
 # reshape the prediction in order to use it
 prediction = prediction.reshape(prediction.shape[0], 1)
 
+# Plot the result
 source = outputDirectory + "/" + date + "/" + shapeFile +"/" + dictionary[date][shapeFile][0]
 with rasterio.open(source) as src:
     img = src.read(1)
@@ -34,7 +35,6 @@ with rasterio.open(source) as src:
 
 image_predicted = prediction.reshape((shape[0],shape[1]))
 
-# Plots
 plt.figure()
 plt.imshow(image_predicted)
 plt.title("Input Image")

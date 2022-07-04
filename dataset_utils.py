@@ -105,15 +105,19 @@ def findValidIndex(source,data):
 
     with rasterio.open(source) as src:
         img = src.read(1)
+        shape = img.shape
         boundingBox = src.bounds
         dataMaskNord = data[data['Nord'] <= boundingBox[1]]
         dataMaskNord = dataMaskNord[dataMaskNord['Nord'] >= boundingBox[0]]
         dataMaskEst = dataMaskNord[dataMaskNord['Est'] <= boundingBox[3]]
         dataMaskEst = dataMaskEst[dataMaskEst['Est'] >= boundingBox[2]]
         dataMaskHerbier = dataMaskEst[dataMaskEst['herbier'] == 1]
-        valid = dataMaskHerbier.sample()
-        x = valid['Nord']
-        y = valid['Est']
-        row, col = src.index(x, y)
 
-    return row,col
+        validIndex = []
+        for i in dataMaskHerbier.index:
+            x = dataMaskHerbier['Nord'][i]
+            y = dataMaskHerbier['Est'][i]
+            row, col = src.index(x, y)
+            validIndex.append((row, col))
+
+    return validIndex

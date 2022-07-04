@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from dataset_utils import *
+from collections import Counter
 import pandas as pd
 
 
@@ -99,13 +100,19 @@ def herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k):
 
     source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
     data = samples(csvPath, source)
-    row, col = findValidIndex(source, data)
+    validIndex = findValidIndex(source, data)
 
-    herbier = img_classified[row, col]
+    herbierClass = []
+    for i in validIndex:
+        herbierClass.append(img_classified[i[0], i[1]])
+
+    h = Counter(herbierClass).keys()
     img_herbier = img_classified
 
-    img_herbier[img_herbier != herbier] = 0
+    for i in h:
+        img_herbier[img_herbier == i] = 100
 
+    img_herbier[img_herbier != 100] = 0
     plt.figure()
     plt.imshow(img_herbier)
     plt.title("herbier")

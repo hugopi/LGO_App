@@ -2,7 +2,7 @@ from classification_utils import*
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM1"
+shapeFile = "GDM2"
 date = "date1"
 
 k = 30
@@ -38,6 +38,8 @@ prediction = kmeans.predict(datasetWithPrediction)
 prediction += 2
 
 # Recover the full dataset : earth,sea,class
+# add a column prediction
 datasetWithPrediction.insert(datasetWithPrediction.shape[1], "Prediction", prediction, allow_duplicates=False)
+# add all rows corresponding to earth by reindexing with 0 value
 index = np.arange(0, dataset.shape[0], 1)
 datasetWithPrediction = datasetWithPrediction.reindex(index, fill_value=0)
