@@ -13,9 +13,9 @@ csvPath = "E:/LGO/ressource/sortie_bateau.csv"
 # if you want to prepare your images set this flag to 1
 flag_preparation = 0
 # if you want to do k-means classification set this flag to 1
-flag_classification = 0
+flag_classification = 1
 # if you want to see herbier detection set this flag to 1
-flag_herbierDetection = 1
+flag_herbierDetection = 0
 
 if flag_preparation == 1:
     imagePreparation(shapeFileDirectoryPath, inputDirectoryPath, outputDirectoryPath)

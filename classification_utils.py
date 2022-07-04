@@ -1,3 +1,5 @@
+import copy
+
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from dataset_utils import *
@@ -77,7 +79,7 @@ def classificationResults(outputDirectory, shapeFileDirectory, k, invert=False):
     separation = earthAndSea(dataset)
 
     # classification of sea pixels
-    prediction = classification(separation, dataset, k,invert)
+    prediction = classification(separation, dataset, k, invert)
 
     # Get the shape of the image we want to display
     source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
@@ -122,3 +124,15 @@ def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k):
         plt.figure()
         plt.imshow(img_herbier)
         plt.title("herbier")
+
+
+def wantedClass(img_classified):
+    wantedClass = int(input("write the number of the class you want to see :"))
+
+    img_herbier = copy.deepcopy(img_classified)
+
+    img_herbier[img_herbier != wantedClass] = 0
+
+    plt.figure()
+    plt.imshow(img_herbier)
+    plt.title("herbier")

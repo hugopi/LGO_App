@@ -17,7 +17,7 @@ dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 separation = earthAndSea(dataset)
 
 # classification of sea pixels
-prediction = classification(separation, dataset, k,invert=True)
+prediction = classification(separation, dataset, k)
 
 # Get the shape of the image we want to display
 source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
