@@ -1,29 +1,26 @@
-from classification_utils import*
+from classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM1"
-date = "date1"
 k = 30
 
+# source, image_classified, prediction = classificationResults(outputDirectory,shapeFileDirectory, k)
 
-#source, image_classified, prediction = classificationResults(outputDirectory,shapeFileDirectory, k)
+dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
-dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
-
-date,shapeFile = selectParameters(dictionary)
+date, shapeFile = selectParameters(dictionary)
 
 # Create a dataset with image data
-dataset = fillDataset(shapeFile,date,dictionary,outputDirectory)
+dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 
 # do separation between earth and sea in order to classify only sea pixels
 separation = earthAndSea(dataset)
 
 # classification of sea pixels
-prediction = classification(separation, dataset, k)
+prediction = classification(separation, dataset, k,invert=True)
 
 # Get the shape of the image we want to display
-source = outputDirectory + "/" + date + "/" + shapeFile +"/" + dictionary[date][shapeFile][0]
+source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
 with rasterio.open(source) as src:
     img = src.read(1)
     shape = img.shape

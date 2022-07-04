@@ -95,8 +95,8 @@ def samples(csvPath, source):
         sampleGeoData = sampleGeoData.to_crs(profile_src['crs'])
 
     for i in range(len(sampleGeoData['geometry'])):
-        data['Nord'][i] = sampleGeoData['geometry'][i].x
-        data['Est'][i] = sampleGeoData['geometry'][i].y
+        data['Nord'][i] = sampleGeoData['geometry'][i].y
+        data['Est'][i] = sampleGeoData['geometry'][i].x
 
     return data
 
@@ -107,17 +107,17 @@ def findValidIndex(source,data):
         img = src.read(1)
         shape = img.shape
         boundingBox = src.bounds
-        dataMaskNord = data[data['Nord'] <= boundingBox[1]]
-        dataMaskNord = dataMaskNord[dataMaskNord['Nord'] >= boundingBox[0]]
-        dataMaskEst = dataMaskNord[dataMaskNord['Est'] <= boundingBox[3]]
-        dataMaskEst = dataMaskEst[dataMaskEst['Est'] >= boundingBox[2]]
+        dataMaskNord = data[data['Nord'] <= boundingBox[3]]
+        dataMaskNord = dataMaskNord[dataMaskNord['Nord'] >= boundingBox[1]]
+        dataMaskEst = dataMaskNord[dataMaskNord['Est'] <= boundingBox[2]]
+        dataMaskEst = dataMaskEst[dataMaskEst['Est'] >= boundingBox[0]]
         dataMaskHerbier = dataMaskEst[dataMaskEst['herbier'] == 1]
 
         validIndex = []
         for i in dataMaskHerbier.index:
             x = dataMaskHerbier['Nord'][i]
             y = dataMaskHerbier['Est'][i]
-            row, col = src.index(x, y)
+            row, col = src.index(y, x)
             validIndex.append((row, col))
 
     return validIndex

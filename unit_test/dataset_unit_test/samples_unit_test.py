@@ -13,7 +13,7 @@ source = outputDirectory + "/" + date + "/" + shapeFile +"/" + dictionary[date][
 
 #data = samples(csvPath, source)
 
-"""data = pd.read_csv(csvPath, sep=';')
+data = pd.read_csv(csvPath, sep=';')
 
 sampleDictionary = {'id': [], 'geometry': []}
 
@@ -32,7 +32,7 @@ with rasterio.open(source) as src:
 
 
 for i in range(len(sampleGeoData['geometry'])):
-    data['Nord'][i] = sampleGeoData['geometry'][i].x
-    data['Est'][i] = sampleGeoData['geometry'][i].y"""
+    data['Nord'][i] = sampleGeoData['geometry'][i].y
+    data['Est'][i] = sampleGeoData['geometry'][i].x
 
 

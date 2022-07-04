@@ -1,4 +1,4 @@
-from classification_utils import*
+from classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
@@ -7,9 +7,9 @@ date = "date1"
 
 k = 30
 
-dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
+dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
-dataset = fillDataset(shapeFile,date,dictionary,outputDirectory)
+dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 
 separation = earthAndSea(dataset)
 # transform separation into dataframe
@@ -20,8 +20,12 @@ separationDataframe.columns = ['prediction']
 dataframe = pd.DataFrame(dataset)
 # Create a dataset containing pixels and their class : earth or sea
 datasetWithPrediction = pd.concat((dataframe, separationDataframe), axis=1)
+invert = False
 # Drop all lines classified as earth
-datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 1].index, inplace=True)
+if invert:
+    datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 0].index, inplace=True)
+else:
+    datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 1].index, inplace=True)
 # remove the class column
 del datasetWithPrediction['prediction']
 

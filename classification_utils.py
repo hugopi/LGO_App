@@ -27,7 +27,7 @@ def earthAndSea(dataset):
     return prediction
 
 
-def classification(separation, dataset, k):
+def classification(separation, dataset, k, invert=False):
     # transform separation into dataframe
     separationDataframe = pd.DataFrame(separation)
     # rename the column
@@ -37,7 +37,12 @@ def classification(separation, dataset, k):
     # Create a dataset containing pixels and their class : earth or sea
     datasetWithPrediction = pd.concat((dataframe, separationDataframe), axis=1)
     # Drop all lines classified as earth
-    datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 1].index, inplace=True)
+    if invert:
+        datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 0].index,
+                                   inplace=True)
+    else:
+        datasetWithPrediction.drop(datasetWithPrediction.loc[datasetWithPrediction['prediction'] == 1].index,
+                                   inplace=True)
     # remove the class column
     del datasetWithPrediction['prediction']
 
@@ -61,11 +66,10 @@ def classification(separation, dataset, k):
     return datasetWithPrediction['Prediction'].to_numpy()
 
 
-def classificationResults(outputDirectory,shapeFileDirectory, k):
+def classificationResults(outputDirectory, shapeFileDirectory, k, invert=False):
+    dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
-    dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
-
-    date,shapeFile = selectParameters(dictionary)
+    date, shapeFile = selectParameters(dictionary)
     # Create a dataset with image data
     dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 
@@ -73,7 +77,7 @@ def classificationResults(outputDirectory,shapeFileDirectory, k):
     separation = earthAndSea(dataset)
 
     # classification of sea pixels
-    prediction = classification(separation, dataset, k)
+    prediction = classification(separation, dataset, k,invert)
 
     # Get the shape of the image we want to display
     source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
@@ -96,23 +100,25 @@ def classificationResults(outputDirectory,shapeFileDirectory, k):
     return source, img_classified, prediction
 
 
-def herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k):
-
+def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k):
     source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
     data = samples(csvPath, source)
     validIndex = findValidIndex(source, data)
 
-    herbierClass = []
-    for i in validIndex:
-        herbierClass.append(img_classified[i[0], i[1]])
+    if len(validIndex) == 0:
+        print("no valid data in this zone")
+    else:
+        herbierClass = []
+        for i in validIndex:
+            herbierClass.append(img_classified[i[0], i[1]])
 
-    h = Counter(herbierClass).keys()
-    img_herbier = img_classified
+        h = Counter(herbierClass).keys()
+        img_herbier = img_classified
 
-    for i in h:
-        img_herbier[img_herbier == i] = 100
+        for i in h:
+            img_herbier[img_herbier == i] = 100
 
-    img_herbier[img_herbier != 100] = 0
-    plt.figure()
-    plt.imshow(img_herbier)
-    plt.title("herbier")
+        img_herbier[img_herbier != 100] = 0
+        plt.figure()
+        plt.imshow(img_herbier)
+        plt.title("herbier")
