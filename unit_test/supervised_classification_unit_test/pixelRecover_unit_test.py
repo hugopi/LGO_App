@@ -13,21 +13,27 @@ date, shapeFile = selectParameters(dictionary)
 crs_template = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
 
 data = samples(csvPath, crs_template)
-
+data.insert(loc=5,column='pixel',value=['nan']*len(data))
 
 for i in data.index:
     y = data['Est'][i]
     x = data['Nord'][i]
     for j in dictionary:
         for k in dictionary[j]:
-            pixel = []
+            pixel=[]
             for l in dictionary[j][k]:
+
                 source = outputDirectory + "/" + j + "/" + k + "/" + l
-                template = outputDirectory + "/" + j + "/" + k + "/" + dictionary[j][k][0]
-                img = resolutionResample(template, source)
 
                 with rasterio.open(source) as src:
-                    row, col = src.index(y, x)
-                    pixel.append((row,col))
+                    img = src.read(1)
+                    boundingBox = src.bounds
 
-# dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
+                    if boundingBox[1] <= x <= boundingBox[3] and boundingBox[0] <= y <= boundingBox[2]:
+                        row, col = src.index(y, x)
+                        pixel.append(img[row, col])
+
+            if len(pixel) != 0:
+                data['pixel'][i] = pixel
+                break
+
