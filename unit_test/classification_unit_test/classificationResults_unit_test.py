@@ -1,4 +1,4 @@
-from classification_utils import *
+from unsupervised_classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"

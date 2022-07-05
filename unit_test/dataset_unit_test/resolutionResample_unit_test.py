@@ -7,15 +7,12 @@ shapeFile = "GDM1"
 date = "date1"
 
 dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
-# dataset,key = fillDataset(outputDirectory,shapeFileDirectory)
-
 dataset = initDataset(shapeFile,date,dictionary,outputDirectory)
 dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 listOfImage = dictionary[date][shapeFile]
 
 template = outputDirectory + "/" + date + "/" + shapeFile + "/" + listOfImage[0]
 source = outputDirectory + "/" + date + "/" + shapeFile + "/" + listOfImage[7]
-
 
 #img = resolutionResample(template, source)
 

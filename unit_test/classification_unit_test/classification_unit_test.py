@@ -1,13 +1,13 @@
-from classification_utils import *
+from unsupervised_classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM2"
-date = "date1"
 
 k = 30
 
 dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
+
+date, shapeFile = selectParameters(dictionary)
 
 dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 

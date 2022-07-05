@@ -1,5 +1,4 @@
 import copy
-
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from dataset_utils import *
@@ -68,7 +67,7 @@ def classification(separation, dataset, k, invert=False):
     return datasetWithPrediction['Prediction'].to_numpy()
 
 
-def classificationResults(outputDirectory, shapeFileDirectory, k, invert=False):
+def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
     dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
     date, shapeFile = selectParameters(dictionary)
@@ -102,8 +101,8 @@ def classificationResults(outputDirectory, shapeFileDirectory, k, invert=False):
     return source, img_classified, prediction
 
 
-def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k):
-    source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
+def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=False):
+    source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k,invert)
     data = samples(csvPath, source)
     validIndex = findValidIndex(source, data)
 

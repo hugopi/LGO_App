@@ -6,9 +6,9 @@ shapeFile = "GDM1"
 date = "date1"
 
 dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
-dataset = fillDataset(shapeFile,date,dictionary,outputDirectory)
+#dataset = fillDataset(shapeFile,date,dictionary,outputDirectory)
 
-'''dataset = initDataset(shapeFile, date, dictionary, outputDirectory)
+dataset = initDataset(shapeFile, date, dictionary, outputDirectory)
 
 listOfImage = dictionary[date][shapeFile]
 
@@ -29,4 +29,4 @@ for i in listOfImage:
     img = img.reshape(shape_template[0] * shape_template[1])
     # overwrite initialized datasetComponent
     dataset[:, datasetIndex] = img
-    datasetIndex += 1'''
+    datasetIndex += 1

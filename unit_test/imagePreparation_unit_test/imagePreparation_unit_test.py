@@ -27,9 +27,28 @@ for i in listOfDirectories:
 
             shutil.copy2(sourceFile, destinationFile)
 
+            ######
+            with rasterio.open(destinationFile) as dest:
+                img2 = dest.read(1)
+
+            print("Before warp, shape : ", img2.shape)
+            #####
+
+            # update resolution
+            gdal.Warp(destinationFile, sourceFile, xRes=10, yRes=10)
+
+            ######
+            with rasterio.open(destinationFile) as dest:
+                img3 = dest.read(1)
+
+            print("After warp, shape : ", img3.shape)
+            #####
+
             shapeFile = shapeFileDirectory + "/" + k +"/" + k+".shp"
 
-            img,metha = prepareImageGPD(shapeFile, sourceFile)
+            img,metha = prepareImageGPD(shapeFile, destinationFile)
+
+            print("After preparation, shape : ", img.shape)
 
             print(i,j," with ", k," Prepared")
 

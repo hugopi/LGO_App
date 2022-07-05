@@ -1,15 +1,16 @@
-from classification_utils import *
+from unsupervised_classification_utils import *
 from collections import Counter
 
 csvPath = "E:/LGO/ressource/sortie_bateau.csv"
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 k = 30
+invert = False
 
 
-#herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k)
+#herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k,invert = False)
 
-source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k)
+source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k,invert)
 data = samples(csvPath,source)
 validIndex = findValidIndex(source,data)
 

@@ -4,6 +4,8 @@ import earthpy.spatial as es
 from pathlib import Path
 import shutil
 import numpy as np
+from osgeo import gdal
+
 from fileManagment_utils import *
 
 
@@ -48,10 +50,14 @@ def imagePreparation(inputDirectory, outputDirectory, shapeFileDirectory):
                 # copy the source file in the destination directory
                 shutil.copy2(sourceFile, destinationFile)
 
+                # update resolution
+                gdal.Warp(destinationFile, sourceFile, xRes=10, yRes=10)
+
+                # get the correct shapeFile
                 shapeFile = shapeFileDirectory + "/" + k + "/" + k + ".shp"
 
                 # Prepare the image (crop)
-                img, metha = prepareImageGPD(shapeFile, sourceFile)
+                img, metha = prepareImageGPD(shapeFile, destinationFile)
 
                 print(i, j, " with ", k, " Prepared")
 
