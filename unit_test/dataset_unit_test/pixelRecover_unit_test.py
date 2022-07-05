@@ -11,8 +11,8 @@ dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 date, shapeFile = selectParameters(dictionary)
 
 crs_template = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
-
 data = samples(csvPath, crs_template)
+
 data.insert(loc=5,column='pixel',value=['nan']*len(data))
 
 for i in data.index:

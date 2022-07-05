@@ -97,8 +97,7 @@ def samples(csvPath, source):
     return data
 
 
-def findValidIndex(source,data):
-
+def findValidIndex(source, data):
     with rasterio.open(source) as src:
         img = src.read(1)
         shape = img.shape
@@ -117,3 +116,30 @@ def findValidIndex(source,data):
             validIndex.append((row, col))
 
     return validIndex
+
+
+def pixelRecover(data, outputDirectory, dictionary):
+    data.insert(loc=5, column='pixel', value=['nan'] * len(data))
+
+    for i in data.index:
+        y = data['Est'][i]
+        x = data['Nord'][i]
+        for j in dictionary:
+            for k in dictionary[j]:
+                pixel = []
+                for l in dictionary[j][k]:
+
+                    source = outputDirectory + "/" + j + "/" + k + "/" + l
+
+                    with rasterio.open(source) as src:
+                        img = src.read(1)
+                        boundingBox = src.bounds
+
+                        if boundingBox[1] <= x <= boundingBox[3] and boundingBox[0] <= y <= boundingBox[2]:
+                            row, col = src.index(y, x)
+                            pixel.append(img[row, col])
+
+                if len(pixel) != 0:
+                    data['pixel'][i] = pixel
+                    break
+    return data
