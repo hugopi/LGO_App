@@ -10,7 +10,7 @@ dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
 source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
 
-data = samples(csvPath, source)
+data = samples(outputDirectory,csvPath, dictionary)
 
 # row,col = findValidIndex(source,data)
 

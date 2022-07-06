@@ -1,17 +1,14 @@
 import pandas as pd
-
+import random
 from dataset_utils import *
 
 csvPath = "E:/LGO/ressource/sortie_bateau.csv"
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM1"
-date = "date1"
 
 dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
-source = outputDirectory + "/" + date + "/" + shapeFile +"/" + dictionary[date][shapeFile][0]
 
-#data = samples(csvPath, source)
+#data = samples(outputDirectory,csvPath, dictionary)
 
 data = pd.read_csv(csvPath, sep=';')
 
@@ -24,6 +21,11 @@ for i in data.index:
 
     sampleDictionary['geometry'].append(Point(x, y))
     sampleDictionary['id'].append(id)
+
+date = list(dictionary.keys())[0]
+shapeFile = list(dictionary[date].keys())[0]
+
+source = outputDirectory + "/" + date + "/" + shapeFile +"/" + dictionary[date][shapeFile][0]
 
 with rasterio.open(source) as src:
     profile_src = src.profile

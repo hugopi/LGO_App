@@ -72,7 +72,7 @@ def fillDataset(shapeFile, date, dictionary, outputDirectory):
     return dataset
 
 
-def samples(csvPath, source):
+def samples(outputDirectory,csvPath, dictionary):
     data = pd.read_csv(csvPath, sep=';')
 
     sampleDictionary = {'id': [], 'geometry': []}
@@ -84,6 +84,11 @@ def samples(csvPath, source):
 
         sampleDictionary['geometry'].append(Point(x, y))
         sampleDictionary['id'].append(id)
+
+    date = list(dictionary.keys())[0]
+    shapeFile = list(dictionary[date].keys())[0]
+
+    source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
 
     with rasterio.open(source) as src:
         profile_src = src.profile
@@ -143,3 +148,19 @@ def pixelRecover(data, outputDirectory, dictionary):
                     data['pixel'][i] = pixel
                     break
     return data
+
+
+def target_features(outputDirectory, csvPath, dictionary):
+
+    data = samples(outputDirectory, csvPath, dictionary)
+
+    dataWithPixel = pixelRecover(data, outputDirectory, dictionary)
+
+    target = dataWithPixel['herbier']
+    features = np.zeros((target.shape[0], len(dataWithPixel['pixel'][0])))
+
+    for i in range(features.shape[0]):
+        for j in range(features.shape[1]):
+            features[i, j] = dataWithPixel['pixel'][i][j]
+
+    return target, features

@@ -96,14 +96,15 @@ def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
 
     plt.figure()
     plt.imshow(img_classified)
-    plt.title("output Image")
+    plt.title("Classified Image : unsupervised (kmeans)")
 
     return source, img_classified, prediction
 
 
 def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=False):
     source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k,invert)
-    data = samples(csvPath, source)
+    dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
+    data = samples(outputDirectory,csvPath, dictionary)
     validIndex = findValidIndex(source, data)
 
     if len(validIndex) == 0:
@@ -122,7 +123,7 @@ def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=Fals
         img_herbier[img_herbier != 100] = 0
         plt.figure()
         plt.imshow(img_herbier)
-        plt.title("herbier")
+        plt.title("herbier : unsupervised (kmeans)")
 
 
 def wantedClass(img_classified):
@@ -134,4 +135,4 @@ def wantedClass(img_classified):
 
     plt.figure()
     plt.imshow(img_herbier)
-    plt.title("herbier")
+    plt.title("herbier : unsupervised (kmeans)")

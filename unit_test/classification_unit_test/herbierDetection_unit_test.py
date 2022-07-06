@@ -10,8 +10,10 @@ invert = False
 
 #herbierDetection(outputDirectory,shapeFileDirectory,csvPath,k,invert = False)
 
+dictionary = imageDictionary(outputDirectory,shapeFileDirectory)
+
 source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k,invert)
-data = samples(csvPath,source)
+data = samples(outputDirectory,csvPath, dictionary)
 validIndex = findValidIndex(source,data)
 
 if len(validIndex) == 0:
