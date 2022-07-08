@@ -68,9 +68,13 @@ def classification(separation, dataset, k, invert=False):
 
 
 def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
+
     dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
     date, shapeFile = selectParameters(dictionary)
+
+    print(" \n classification is running, wait a moment ")
+
     # Create a dataset with image data
     dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
 
@@ -126,12 +130,17 @@ def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=Fals
         plt.title("herbier : unsupervised (kmeans)")
 
 
-def wantedClass(img_classified):
+def wantedClass(img_classified,savingShapeDirectory,source):
     wantedClass = int(input("write the number of the class you want to see :"))
 
     img_herbier = copy.deepcopy(img_classified)
 
     img_herbier[img_herbier != wantedClass] = 0
+
+    save = input('Do you want to save the result as .shp : yes or no')
+
+    if save == 'yes':
+        saveShape(savingShapeDirectory, img_herbier, wantedClass, source)
 
     plt.figure()
     plt.imshow(img_herbier)
