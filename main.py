@@ -20,11 +20,12 @@ flag_classification = 1
 flag_herbierDetection = 0
 
 if flag_preparation == 1:
-    imagePreparation(inputDirectoryPath,outputDirectoryPath,shapeFileDirectoryPath)
+    imagePreparation(inputDirectoryPath, outputDirectoryPath, shapeFileDirectoryPath)
 
 if flag_classification == 1:
-    source, image_classified, prediction = classificationResults(outputDirectoryPath, shapeFileDirectoryPath, 30,invert=True)
-    wantedClass(image_classified,savingShapeDirectory,source)
+    source, image_classified, prediction = classificationResults(outputDirectoryPath, shapeFileDirectoryPath, 30,
+                                                                 invert=False)
+    wantedClass(image_classified, savingShapeDirectory, source)
 
 if flag_herbierDetection == 1:
-    herbierDetection(outputDirectoryPath, shapeFileDirectoryPath, csvPath, 30,invert=True)
+    herbierDetection(outputDirectoryPath, shapeFileDirectoryPath, csvPath, 30, invert=True)

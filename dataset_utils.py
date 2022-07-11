@@ -164,3 +164,25 @@ def target_features(outputDirectory, csvPath, dictionary):
             features[i, j] = dataWithPixel['pixel'][i][j]
 
     return target, features
+
+
+def seaDataset(dataset,separation,invert):
+    # transform separation into dataframe
+    separationDataframe = pd.DataFrame(separation)
+    # rename the column
+    separationDataframe.columns = ['prediction']
+    # transform dataset into dataframe
+    dataframe = pd.DataFrame(dataset)
+    # Create a dataset containing pixels and their class : earth or sea
+    sea = pd.concat((dataframe, separationDataframe), axis=1)
+    # Drop all lines classified as earth
+    if invert:
+        sea.drop(sea.loc[sea['prediction'] == 0].index,
+                 inplace=True)
+    else:
+        sea.drop(sea.loc[sea['prediction'] == 1].index,
+                 inplace=True)
+    # remove the class column
+    del sea['prediction']
+
+    return sea

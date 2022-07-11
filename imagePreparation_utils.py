@@ -1,9 +1,6 @@
-import rasterio
 import geopandas as gpd
 import earthpy.spatial as es
-from pathlib import Path
 import shutil
-import numpy as np
 from osgeo import gdal
 
 from fileManagment_utils import *
@@ -27,7 +24,9 @@ def prepareImageGPD(shapeFilePath, source):
 
 def imagePreparation(inputDirectory, outputDirectory, shapeFileDirectory):
     # description : the function will browse all input images, prepare them and store them
+    # list the directories (different dates) in the input directory
     listOfDirectories = fileList(inputDirectory)
+    # list the shapeFiles (different dates) in the shapeFile directory
     listOfShapeFiles = fileList(shapeFileDirectory)
 
     # create a dictionary {'date': ['image_name'],'date': ['image_name']}
