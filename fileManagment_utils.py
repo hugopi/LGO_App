@@ -3,6 +3,7 @@ from pathlib import Path
 
 import fiona
 import rasterio
+from matplotlib import pyplot as plt
 
 
 def fileList(directoryPath):
@@ -45,7 +46,7 @@ def selectParameters(dictionary):
     return date, shape
 
 
-def saveShape(savingShapeDirectory, img_herbier, wantedClass, source):
+def generateShape(destination, source, img_herbier):
     # find the coordinates of herbier pixels
     xyList = []
 
@@ -59,32 +60,41 @@ def saveShape(savingShapeDirectory, img_herbier, wantedClass, source):
 
     # define schema
     schema = {
-        'geometry': 'Polygon',
+        'geometry': 'Point',
         'properties': [('Name', 'str')]
     }
 
-    # create a destinationFile name
+    # open a fiona object
+    pointShp = fiona.open(destination, mode='w', driver='ESRI Shapefile',
+                          schema=schema, crs=crs_source)
+
+    for i in xyList:
+        rowDict = {
+            'geometry': {'type': 'Point',
+                         'coordinates': (i[0], i[1])},
+            'properties': {'Name': 'point'},
+        }
+        pointShp.write(rowDict)
+    # close fiona object
+    pointShp.close()
+
+
+def saveShape(savingShapeDirectory, img_classified, img_herbier, wantedClass, source):
+    # names
     split = source.split('/')
-    destinationFile = split[-3] + '_' + split[-2] + '_' + 'class' + '_' + str(wantedClass) + '.shp'
-    destination = savingShapeDirectory + '/' + split[-3] + '/' + split[-2] + '/' + 'class' + '_' + str(wantedClass)
+    image = split[-3]
+    shape = split[-2]
+    destinationDirectory = savingShapeDirectory + '/' + image + '_' + shape + '_' + 'class' + '_' + str(wantedClass)
 
     # if destination directory not exist create it, else overwrite
-    path = Path(destination)
+    path = Path(destinationDirectory)
     path.mkdir(parents=True, exist_ok=True)
 
-    destination = destination + '/' + destinationFile
+    # File names
+    overviewFullFile = 'overview_full.jpeg'
+    overviewClassFile = 'overview_class.jpeg'
 
-    # open a fiona object
-    polyShp = fiona.open(destination, mode='w', driver='ESRI Shapefile',
-                         schema=schema, crs=crs_source)
-
-    # save record and close shapefile
-    rowDict = {
-        'geometry': {'type': 'Polygon', 'coordinates': [xyList]},
-        'properties': {'Name': split[-2]},
-    }
-
-    polyShp.write(rowDict)
-
-    # close fiona object
-    polyShp.close()
+    # save
+    plt.imsave(destinationDirectory + "/" + overviewFullFile, img_classified)
+    plt.imsave(destinationDirectory + "/" + overviewClassFile, img_herbier)
+    generateShape(destinationDirectory + "/" + 'shapefile', source, img_herbier)

@@ -1,14 +1,16 @@
-import numpy as np
-import pandas as pd
-from shapely.geometry import Point
-
 from bathymetry_utils import *
+from unsupervised_classification_utils import *
 
 bathymetryfilePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
-outputDirectory = "E:/LGO/ressource/output_bathymetry"
-shapeFile = "E:/LGO/ressource/shapeFile/GDM1/GDM1.shp"
+outputBathymetrtDirectory = "E:/LGO/ressource/output_bathymetry"
+outputDirectory = "E:/LGO/ressource/output"
+shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 
-prepareBathymetry(bathymetryfilePath, outputDirectory, shapeFile)
+dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
+
+date, shapeFile = selectParameters(dictionary)
+
+prepareBathymetry(bathymetryfilePath, outputBathymetrtDirectory, shapeFileDirectory, shapeFile)
 
 source = "E:/LGO/ressource/output/date1/GDM1/T30TWT_20220506T110621_B02.jp2"
 bathymetryFile = "E:/LGO/ressource/output_bathymetry/GDM1/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
@@ -63,3 +65,11 @@ bottom = -1.2
 
 bathyDataframe = bathyDataframe[bathyDataframe.value <= top]
 bathyDataframe = bathyDataframe[bathyDataframe.value >= bottom]
+
+dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
+
+# classify the pixels of the dataset between earth and sea
+separation = earthAndSea(dataset)
+
+# create a dataset only with sea pixels
+sea = seaDataset(dataset, separation, invert=True)

@@ -1,26 +1,19 @@
+import numpy as np
 from matplotlib import pyplot as plt
 from imagePreparation_utils import *
 
-filePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
-shapeFile = "E:/LGO/ressource/shapeFile/GDM1/GDM1.shp"
-output = "E:/LGO/ressource/output"
+bathymetryfilePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
+outputBathymetrtDirectory = "E:/LGO/ressource/output_bathymetry"
+outputDirectory = "E:/LGO/ressource/output"
+shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 
+dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
-with rasterio.open(filePath) as src:
-    bat = src.read(1)
-    profile = src.profile
-    x, y = (src.bounds.left, src.bounds.top)
-    row, col = src.index(x, y)
-    pix = bat[row,col]
-    coordone = src.xy(row,col)
+date, shapeFile = selectParameters(dictionary)
 
-plt.figure()
-plt.imshow(bat)
-plt.title("batymetry")
+print('Bathymetric data in preparation')
 
-
-
-destination = output+ "/" + "test" + "/" + "baty"
+destination = outputBathymetrtDirectory + "/" + shapeFile
 destinationFile = destination + '/' + 'MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag'
 
 # if destination directory not exist create it, else overwrite
@@ -28,12 +21,12 @@ path = Path(destination)
 path.mkdir(parents=True, exist_ok=True)
 
 # copy the source file in the destination directory
-shutil.copy2(filePath, destinationFile)
+shutil.copy2(bathymetryfilePath, destinationFile)
 
-'''# update resolution
-gdal.Warp(destinationFile, filePath, xRes=10, yRes=10)'''
+shapeFilePath = shapeFileDirectory + "/" + shapeFile + "/" + shapeFile + ".shp"
 
-baty, meta = prepareImageGPD(shapeFile,destinationFile)
+# crop the bathymetric data
+baty, meta = prepareImageGPD(shapeFilePath, destinationFile)
 
 # Overwrite the destination file created before with the cropped image
 with rasterio.open(destinationFile, "w", **meta) as dest:
@@ -42,9 +35,13 @@ with rasterio.open(destinationFile, "w", **meta) as dest:
 with rasterio.open(destinationFile) as src:
     img = src.read(1)
 
+img = np.kron(img, np.ones((2, 2)))
+
+
+with rasterio.open("E:/LGO/ressource/output/date1/GDM1/T30TWT_20220506T110621_B02.jp2") as src:
+    img2 = src.read(1)
+
+
 plt.figure()
 plt.imshow(img)
 plt.title("herbier")
-
-
-

@@ -4,6 +4,7 @@ from sklearn.cluster import KMeans
 from dataset_utils import *
 from collections import Counter
 import pandas as pd
+from fileManagment_utils import imageDictionary
 
 
 def earthAndSea(dataset):
@@ -29,7 +30,6 @@ def earthAndSea(dataset):
 
 
 def classification(separation, dataset, k, invert=False):
-
     # create a dataset only with sea pixels
     sea = seaDataset(dataset, separation, invert)
     # define classification model (kmeans) and the number of clusters desired
@@ -54,7 +54,6 @@ def classification(separation, dataset, k, invert=False):
 
 
 def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
-
     dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
     # ask the date and the shapefile you want
@@ -92,10 +91,10 @@ def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
     return source, img_classified, prediction
 
 
-def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=False):
-    source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k,invert)
+def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k, invert=False):
+    source, img_classified, prediction = classificationResults(outputDirectory, shapeFileDirectory, k, invert)
     dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
-    data = samples(outputDirectory,csvPath, dictionary)
+    data = samples(outputDirectory, csvPath, dictionary)
     validIndex = findValidIndex(source, data)
 
     if len(validIndex) == 0:
@@ -117,7 +116,7 @@ def herbierDetection(outputDirectory, shapeFileDirectory, csvPath, k,invert=Fals
         plt.title("herbier : unsupervised (kmeans)")
 
 
-def wantedClass(img_classified,savingShapeDirectory,source):
+def wantedClass(img_classified, savingShapeDirectory, source):
     wantedClass = int(input("write the number of the class you want to see :"))
 
     img_herbier = copy.deepcopy(img_classified)
@@ -127,7 +126,7 @@ def wantedClass(img_classified,savingShapeDirectory,source):
     save = input('Do you want to save the result as .shp : yes or no')
 
     if save == 'yes':
-        saveShape(savingShapeDirectory, img_herbier, wantedClass, source)
+        saveShape(savingShapeDirectory, img_classified, img_herbier, wantedClass, source)
 
     plt.figure()
     plt.imshow(img_herbier)
