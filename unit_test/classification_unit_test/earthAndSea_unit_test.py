@@ -2,7 +2,7 @@ from unsupervised_classification_utils import *
 
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
-shapeFile = "GDM2"
+shapeFile = "GDM1"
 date = "date1"
 
 dictionary = imageDictionary(outputDirectory,shapeFileDirectory)

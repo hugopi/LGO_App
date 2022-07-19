@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 from dataset_utils import *
 from collections import Counter
 import pandas as pd
-from fileManagment_utils import imageDictionary
+from bathymetry_utils import *
 
 
 def earthAndSea(dataset):
@@ -53,11 +53,14 @@ def classification(separation, dataset, k, invert=False):
     return data['Prediction'].to_numpy()
 
 
-def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
+def classificationResults(outputDirectory, shapeFileDirectory, bathymetryfilePath, outputBathymetrytDirectory, k,
+                          invert, bathymetry=True):
     dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
     # ask the date and the shapefile you want
     date, shapeFile = selectParameters(dictionary)
+
+    source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
 
     print(" \n classification is running, wait a moment ")
 
@@ -67,11 +70,18 @@ def classificationResults(outputDirectory, shapeFileDirectory, k, invert):
     # do separation between earth and sea in order to classify only sea pixels
     separation = earthAndSea(dataset)
 
+    if bathymetry == True:
+        # modify dataset with bathymetry
+        prepareBathymetry(bathymetryfilePath, outputBathymetrytDirectory, shapeFileDirectory, source, shapeFile)
+        bathymetryFile = outputBathymetrytDirectory + '/' + shapeFile + '/' + "MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
+        bathymetryData = bathymetricData(bathymetryFile, source)
+
+        dataset = np.concatenate((dataset, bathymetryData), axis=1)
+
     # classification of sea pixels
     prediction = classification(separation, dataset, k, invert)
 
     # Get the shape of the image we want to display
-    source = outputDirectory + "/" + date + "/" + shapeFile + "/" + dictionary[date][shapeFile][0]
     with rasterio.open(source) as src:
         img = src.read(1)
         shape = img.shape

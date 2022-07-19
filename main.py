@@ -11,6 +11,10 @@ shapeFileDirectoryPath = "E:/LGO/ressource/shapeFile"
 savingShapeDirectory = "E:/LGO/ressource/savingShape"
 # Path to your csv file
 csvPath = "E:/LGO/ressource/sortie_bateau.csv"
+# Path to your bathymetry data file
+bathymetryfilePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
+# Path to the directory where updated batymetry will be saved
+outputBathymetrytDirectory = "E:/LGO/ressource/output_bathymetry"
 
 # if you want to prepare your images set this flag to 1
 flag_preparation = 0
@@ -23,8 +27,8 @@ if flag_preparation == 1:
     imagePreparation(inputDirectoryPath, outputDirectoryPath, shapeFileDirectoryPath)
 
 if flag_classification == 1:
-    source, image_classified, prediction = classificationResults(outputDirectoryPath, shapeFileDirectoryPath, 30,
-                                                                 invert=False)
+    source, image_classified, prediction = classificationResults(outputDirectoryPath, shapeFileDirectoryPath, bathymetryfilePath, outputBathymetrytDirectory, 30,
+                          invert=True, bathymetry=False)
     wantedClass(image_classified, savingShapeDirectory, source)
 
 if flag_herbierDetection == 1:

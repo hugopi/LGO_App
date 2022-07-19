@@ -1,8 +1,7 @@
 from bathymetry_utils import *
 from unsupervised_classification_utils import *
 
-bathymetryfilePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
-outputBathymetrtDirectory = "E:/LGO/ressource/output_bathymetry"
+outputBathymetryDirectory = "E:/LGO/ressource/output_bathymetry"
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
 
@@ -10,66 +9,45 @@ dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
 date, shapeFile = selectParameters(dictionary)
 
-prepareBathymetry(bathymetryfilePath, outputBathymetrtDirectory, shapeFileDirectory, shapeFile)
+bathymetryFile = outputBathymetryDirectory + '/' + shapeFile + '/' + "MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
 
-source = "E:/LGO/ressource/output/date1/GDM1/T30TWT_20220506T110621_B02.jp2"
-bathymetryFile = "E:/LGO/ressource/output_bathymetry/GDM1/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
-
-'''with rasterio.open(source) as src:
-    img = src.read(1)
-    shape = img.shape
-
-    coordinateList = []
-
-    for row in range(img.shape[0]):
-        for col in range(img.shape[1]):
-            coordinateList.append(src.xy(row, col))'''
-
-### convert bathy coordinates
-with rasterio.open(source) as src:
-    profile_src = src.profile
+### complete with zero if its required
 
 with rasterio.open(bathymetryFile) as src:
-    bat = src.read(1)
-    coordinateList = []
+    bathymetry = src.read(1)
+    shape = bathymetry.shape
 
-    bathyDictionary = {'id': [], 'geometry': []}
+    source = outputDirectory + '/' + date + '/' + shapeFile + '/' + dictionary[date][shapeFile][0]
 
-    for row in range(bat.shape[0]):
-        for col in range(bat.shape[1]):
-            point = src.xy(row, col)
-            bathyDictionary['geometry'].append(Point(point[0], point[1]))
-            bathyDictionary['id'].append(str(row) + '_' + str(col))
+    with rasterio.open(source) as src:
+        img = src.read(1)
 
-    bathyGeoData = gpd.GeoDataFrame(bathyDictionary, crs=4326)
-    bathyGeoData = bathyGeoData.to_crs(profile_src['crs'])
+    if bathymetry.shape[0] != img.shape[0]:
+        gap = img.shape[0] - bathymetry.shape[0]
+        zero = np.zeros((gap, img.shape[1]))
+        bathymetry = np.concatenate((bathymetry, zero), axis=0)
 
-### create a dataFrame with bathy value and coordinates
+    if bathymetry.shape[1] != img.shape[1]:
+        gap = img.shape[1] - bathymetry.shape[1]
+        zero = np.zeros((img.shape[0], gap))
+        bathymetry = np.concatenate((bathymetry, zero), axis=1)
 
-nord = []
-est = []
-for i in bathyGeoData['geometry']:
-    nord.append(i.y)
-    est.append(i.x)
+bathymetryVect = bathymetry.reshape((img.shape[0] * img.shape[1], 1))
 
-d = {'value': bat.reshape(bat.shape[0] * bat.shape[1]),
-     'Nord': nord,
-     'Est': est}
-
-bathyDataframe = pd.DataFrame(d)
-
-### choose only the point you want
-
-top = -0.8
+### choose value
+top = -0.5
 bottom = -1.2
 
-bathyDataframe = bathyDataframe[bathyDataframe.value <= top]
-bathyDataframe = bathyDataframe[bathyDataframe.value >= bottom]
+bathymetryVect[bathymetryVect<=bottom] = 0
+bathymetryVect[bathymetryVect>=top] = 0
+bathymetryVect[bathymetryVect!=0] = 1
 
+###
 dataset = fillDataset(shapeFile, date, dictionary, outputDirectory)
+dataset2 = np.concatenate((dataset, bathymetryVect), axis=1)
 
 # classify the pixels of the dataset between earth and sea
-separation = earthAndSea(dataset)
+separation = earthAndSea(dataset2)
 
 # create a dataset only with sea pixels
-sea = seaDataset(dataset, separation, invert=True)
+sea = seaDataset(dataset2, separation, invert=True)
