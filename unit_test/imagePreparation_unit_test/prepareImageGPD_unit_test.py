@@ -1,8 +1,7 @@
 from imagePreparation_utils import *
 
-shapeFile = "/Users/pires/PycharmProjects/LGO/application/shapeFile/GDM1/GDM1.shp"
-source = "/Users/pires/PycharmProjects/LGO/application/ressource/input_image/date1/T30TWT_20220506T110621_B02.jp2"
-
+shapeFile = "E:/LGO/ressource/shapeFile/GDM1/GDM1.shp"
+source = "E:/LGO/ressource/output/date1/GDM1/T30TWT_20220506T110621_B02.jp2"
 #img, metha = prepareImageGPD(shapeFile,source)
 
 # Open the shapeFile

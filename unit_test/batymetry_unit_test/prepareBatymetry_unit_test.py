@@ -1,19 +1,31 @@
-import numpy as np
-from matplotlib import pyplot as plt
-from imagePreparation_utils import *
+from bathymetry_utils import *
 
 bathymetryfilePath = "E:/LGO/ressource/MNT_COTIER_MORBIHAN_TANDEM_PBMA/MNT_COTIER_MORBIHAN_TANDEM_PBMA/DONNEES/MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag"
-outputBathymetrtDirectory = "E:/LGO/ressource/output_bathymetry"
+outputBathymetrytDirectory = "E:/LGO/ressource/output_bathymetry"
 outputDirectory = "E:/LGO/ressource/output"
 shapeFileDirectory = "E:/LGO/ressource/shapeFile"
+
+
+#prepareBathymetry(bathymetryfilePath, outputBathymetrytDirectory, outputDirectory, shapeFileDirectory)
+
+
+# check data
+with rasterio.open(bathymetryfilePath) as src:
+    bathymetry_src = src.read(1)
 
 dictionary = imageDictionary(outputDirectory, shapeFileDirectory)
 
 date, shapeFile = selectParameters(dictionary)
 
+# open an output image in order to get crs
+source = outputDirectory + '/' + date + '/' + shapeFile + '/' + dictionary[date][shapeFile][0]
+with rasterio.open(source) as src:
+    crs_img = src.crs
+
 print('Bathymetric data in preparation')
 
-destination = outputBathymetrtDirectory + "/" + shapeFile
+# create a destination file which will be overwritten
+destination = outputBathymetrytDirectory + "/" + shapeFile
 destinationFile = destination + '/' + 'MNT_COTIER_MORBIHAN_TANDEM_20m_WGS84_PBMA_ZNEG.bag'
 
 # if destination directory not exist create it, else overwrite
@@ -23,25 +35,29 @@ path.mkdir(parents=True, exist_ok=True)
 # copy the source file in the destination directory
 shutil.copy2(bathymetryfilePath, destinationFile)
 
-shapeFilePath = shapeFileDirectory + "/" + shapeFile + "/" + shapeFile + ".shp"
+# open bathymetric data with gdal
+input_raster = gdal.Open(bathymetryfilePath)
 
-# crop the bathymetric data
-baty, meta = prepareImageGPD(shapeFilePath, destinationFile)
+# reproject and update the resolution 
+gdal.Warp(destinationFile, input_raster, dstSRS=crs_img, xRes=10, yRes=10)
+
+# check data
+with rasterio.open(destinationFile) as src:
+    bathymetry_dst = src.read(1)
+    profil_bathymetry_dst = src.profile
+
+# crop 
+shape = shapeFileDirectory + '/' + shapeFile + '/' + shapeFile + '.shp'
+bathymetry_crop, meta = prepareImageGPD(shape, destinationFile)
 
 # Overwrite the destination file created before with the cropped image
 with rasterio.open(destinationFile, "w", **meta) as dest:
-    dest.write(baty)
-
+    dest.write(bathymetry_crop)
+    
+# check data
 with rasterio.open(destinationFile) as src:
-    img = src.read(1)
-
-img = np.kron(img, np.ones((2, 2)))
-
-
-with rasterio.open("E:/LGO/ressource/output/date1/GDM1/T30TWT_20220506T110621_B02.jp2") as src:
-    img2 = src.read(1)
-
+    bathymetry_final = src.read(1)
 
 plt.figure()
-plt.imshow(img)
-plt.title("herbier")
+plt.imshow(bathymetry_final)
+plt.title("bathymetrie")
