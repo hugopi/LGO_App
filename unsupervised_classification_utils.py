@@ -133,6 +133,14 @@ def wantedClass(img_classified, savingShapeDirectory, source):
 
     img_herbier[img_herbier != wantedClass] = 0
 
+    count = 0
+    for i in range(img_herbier.shape[0]):
+        for j in range(img_herbier.shape[1]):
+            if img_herbier[i, j] != 0:
+                count += 1
+
+    area = count * 10
+
     save = input('Do you want to save the result as .shp : yes or no')
 
     if save == 'yes':
@@ -140,4 +148,5 @@ def wantedClass(img_classified, savingShapeDirectory, source):
 
     plt.figure()
     plt.imshow(img_herbier)
-    plt.title("herbier : unsupervised (kmeans)")
+    plt.title("herbier : unsupervised (kmeans)   Area : {} m2".format(area))
+

@@ -28,7 +28,7 @@ if flag_preparation == 1:
 
 if flag_classification == 1:
     source, image_classified, prediction = classificationResults(outputDirectoryPath, shapeFileDirectoryPath, bathymetryfilePath, outputBathymetrytDirectory, 30,
-                          invert=True, bathymetry=False)
+                          invert=True, bathymetry=True)
     wantedClass(image_classified, savingShapeDirectory, source)
 
 if flag_herbierDetection == 1:
